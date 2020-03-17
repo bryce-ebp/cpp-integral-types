@@ -1,6 +1,7 @@
 #pragma once
 
 #include <numeric>
+#include <type_traits>
 
 /* https://doc.rust-lang.org/1.30.0/std/primitive.i8.html
  * https://doc.rust-lang.org/1.30.0/std/primitive.u8.html
@@ -8,6 +9,9 @@
  * */
 
 template<typename T>
+concept integral_type = std::is_integral_v<T>;
+
+template<integral_type T>
 class integral {
 public:
     constexpr integral() = default;
