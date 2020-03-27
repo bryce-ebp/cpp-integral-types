@@ -11,6 +11,8 @@
  *
  * */
 
+
+// TODO: Write own bitset, C++ makes its 8 bytes.
 template<typename T>
 concept integral_type = std::is_integral_v<T>;
 
@@ -19,7 +21,7 @@ class integral {
 public:
     constexpr integral() noexcept = default;
     constexpr integral(const T t) noexcept
-        : value_(t) { }
+        : value_(t), bitset_((long long) value_) { }
 
     constexpr operator T() const noexcept { return value_; }
 
@@ -60,7 +62,7 @@ public:
         })) + 1;
     }
 
-    [[nodiscard]] constexpr bool is_pow_2() const noexcept {
+    [[nodiscard]] constexpr bool is_pow_two() const noexcept {
         return value_ && !(value_ & (value_ - 1));
     }
 
@@ -98,8 +100,8 @@ public:
         return ret;
     }
 
-    [[nodiscard]] constexpr T next_pow_2() const noexcept {
-        auto ret{ value_ };
+    [[nodiscard]] constexpr unsigned short next_pow_two() const noexcept {
+        auto ret{ (unsigned short) value_ };
         --ret;
         ret |= ret >> 1;
         ret |= ret >> 2;
@@ -109,10 +111,11 @@ public:
         return ++ret;
     }
 
+
 private:
     T value_{ };
     static constexpr auto limit_{ std::numeric_limits<T>() };
-    std::bitset<sizeof(T) * 8> bitset_{ value_ };
+    std::bitset<sizeof(T) * 8> bitset_{ };
 
 };
 
