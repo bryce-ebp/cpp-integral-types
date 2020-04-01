@@ -20,7 +20,7 @@ int main() {
             << "var2: " << var2 << '\n'
             << "var2: get_max: " << var2.get_max() << '\n'
             << "var2: get_min: " << var2.get_min() << '\n'
-            << "var2: next_pow_2: " << var2.next_pow_two() << '\n'
+            << "var2: trailing_zeros: " << var2.trailing_zeros() << '\n'
             << "var2 is_pow2: " << var2.is_pow_two() << "\n\n\n"
 
 

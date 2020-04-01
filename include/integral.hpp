@@ -2,9 +2,9 @@
 
 #include <numeric>
 #include <type_traits>
-#include <bitset>
 #include <cctype>
-#include <algorithm>
+#define __cpp_lib_bitops
+#include <bit>
 
 /* https://doc.rust-lang.org/1.30.0/std/primitive.i8.html
  * https://doc.rust-lang.org/1.30.0/std/primitive.u8.html
@@ -12,7 +12,6 @@
  * */
 
 
-// TODO: Write own bitset, C++ makes its 8 bytes.
 template<typename T>
 concept integral_type = std::is_integral_v<T>;
 
@@ -21,45 +20,29 @@ class integral {
 public:
     constexpr integral() noexcept = default;
     constexpr integral(const T t) noexcept
-        : value_(t), bitset_((long long) value_) { }
+        : value_(t) { }
 
     constexpr operator T() const noexcept { return value_; }
 
     static constexpr T get_max() noexcept { return limit_.max(); }
     static constexpr T get_min() noexcept { return limit_.min(); }
 
-    constexpr std::bitset<sizeof(T) * 8> &get_bitset() const noexcept { return bitset_; }
 
-    [[nodiscard]] std::string bitset_str() const noexcept {
-        return bitset_.to_string();
-    }
 
     [[nodiscard]] constexpr unsigned short count_ones() const noexcept {
-        return get_bitset().count();
+        return std::popcount(value_);
     }
 
     [[nodiscard]] constexpr unsigned short count_zeros() const noexcept {
-        return bitset_size() - count_ones();
-    }
-
-    [[nodiscard]] constexpr unsigned short bitset_size() const noexcept {
-        return get_bitset().size();
+        return std::bit_length(value_) - count_ones();
     }
 
     constexpr T leading_zeros() const noexcept {
-        const auto str{ bitset_str() };
-
-        return std::distance(str.begin(), std::adjacent_find(str.begin(), str.end(), [] (const auto &lhs, const auto &rhs) {
-            return lhs != rhs;
-        })) + 1;
+        return std::countl_zero(value_);
     }
 
     constexpr T trailing_zeros() const noexcept {
-        const auto str{ bitset_str() };
-
-        return std::distance(str.rbegin(), std::adjacent_find(str.rbegin(), str.rend(), [] (const auto &lhs, const auto &rhs) {
-            return lhs != rhs;
-        })) + 1;
+        return std::countr_zero(value_);
     }
 
     [[nodiscard]] constexpr bool is_pow_two() const noexcept {
@@ -101,21 +84,13 @@ public:
     }
 
     [[nodiscard]] constexpr unsigned short next_pow_two() const noexcept {
-        auto ret{ (unsigned short) value_ };
-        --ret;
-        ret |= ret >> 1;
-        ret |= ret >> 2;
-        ret |= ret >> 4;
-        ret |= ret >> 8;
-        ret |= ret >> 16;
-        return ++ret;
+        return std::ispow2(value_);
     }
 
 
 private:
     T value_{ };
     static constexpr auto limit_{ std::numeric_limits<T>() };
-    std::bitset<sizeof(T) * 8> bitset_{ };
 
 };
 
